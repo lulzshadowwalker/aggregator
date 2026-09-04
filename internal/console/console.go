@@ -22,6 +22,8 @@ func New() *Console {
 		Login{},
 		Users{},
 		Reset{},
+		RSS{},
+		Agg{},
 	}
 
 	console := &Console{
@@ -39,8 +41,8 @@ func New() *Console {
 
 func (c *Console) Run(args []string) (string, int, error) {
 	state := &state{
-		config:  config.Instance,
-		console: *c,
+		config:   config.Instance,
+		console:  *c,
 		database: database.New(database.Connection),
 	}
 
@@ -76,7 +78,7 @@ type Commander interface {
 }
 
 type state struct {
-	config  *config.Config
-	console Console
+	config   *config.Config
+	console  Console
 	database *database.Queries
 }
