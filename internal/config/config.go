@@ -1,9 +1,5 @@
 package config
 
-// questions
-// 1. am i using correct file mode in os.write ?
-// 2.  do I need to have a mutex or not ?
-
 import (
 	"encoding/json"
 	"fmt"
@@ -59,5 +55,5 @@ func filepath() string {
 		panic(fmt.Errorf("failed to read user home directory %w", err))
 	}
 
-	return path.Join(dir, ".aggregator.json")
+	return path.Join(dir, ".gatorconfig.json")
 }
