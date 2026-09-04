@@ -52,7 +52,7 @@ func init() {
 func filepath() string {
 	dir, err := os.UserHomeDir()
 	if err != nil {
-		panic(fmt.Errorf("failed to read user home directory %w", err))
+		panic(fmt.Errorf("failed to read user home directory: %w", err))
 	}
 
 	return path.Join(dir, ".gatorconfig.json")

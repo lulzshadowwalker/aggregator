@@ -17,7 +17,7 @@ func (c Help) Description() string {
 	return "show this help message"
 }
 
-func (c Help) Handle(state *state, args []string) (string, error) {
+func (c Help) Handle(state *state, args []string) (string, int, error) {
 	var str strings.Builder
 
 	str.WriteString("welcome to the aggregator cli\n\n")
@@ -29,5 +29,5 @@ func (c Help) Handle(state *state, args []string) (string, error) {
 		str.WriteString(fmt.Sprintf("\t%s: %s\n", command.Name(), command.Description()))
 	}
 
-	return str.String(), ErrHelp
+	return str.String(), 1, nil
 }

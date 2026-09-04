@@ -4,11 +4,11 @@ import (
 	"errors"
 
 	"github.com/lulzshadowwalker/aggregator/internal/config"
+	"github.com/lulzshadowwalker/aggregator/internal/database"
 )
 
 var (
 	ErrConflict = errors.New("command with the same name already exists")
-	ErrHelp = errors.New("help")
 )
 
 type Console struct {
@@ -18,6 +18,7 @@ type Console struct {
 func New() *Console {
 	commands := []Commander{
 		Help{},
+		Register{},
 		Login{},
 	}
 
@@ -34,10 +35,11 @@ func New() *Console {
 	return console
 }
 
-func (c *Console) Run(args []string) (string, error) {
+func (c *Console) Run(args []string) (string, int, error) {
 	state := &state{
 		config:  config.Instance,
 		console: *c,
+		database: database.New(database.Connection),
 	}
 
 	var command Commander = Help{}
@@ -68,10 +70,11 @@ func (c *Console) Register(command Commander) error {
 type Commander interface {
 	Name() string
 	Description() string
-	Handle(state *state, args []string) (string, error)
+	Handle(state *state, args []string) (string, int, error)
 }
 
 type state struct {
 	config  *config.Config
 	console Console
+	database *database.Queries
 }

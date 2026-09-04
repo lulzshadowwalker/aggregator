@@ -15,20 +15,20 @@ func (c Login) Name() string {
 }
 
 func (c Login) Description() string {
-	return "login with username and password"
+	return "login with username"
 }
 
-func (c Login) Handle(state *state, args []string) (string, error) {
+func (c Login) Handle(state *state, args []string) (string, int, error) {
 	var username string
 	if len(args) > 0 {
 		username = args[0]
 	}
 
-	if err := auth.Login(auth.LoginParams{
+	if err := auth.Login(auth.Credentials{
 		Username: username,
-	}); err != nil {
-		return "", err
+	}, state.database); err != nil {
+		return "", 1, err
 	}
 
-	return fmt.Sprintf("welcome back, %s!", username), nil
+	return fmt.Sprintf("welcome back, %s!", username), 0, nil
 }

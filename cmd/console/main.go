@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -9,16 +8,14 @@ import (
 )
 
 func main() {
-	output, err := console.New().Run(os.Args[1:])
+	output, status, err := console.New().Run(os.Args[1:])
 	if err != nil {
-		if errors.Is(console.ErrHelp, err) {
-			fmt.Println(output)
-		} else {
-			fmt.Println(err)
-		}
-
-		os.Exit(1)
+		fmt.Println(err)
 	}
 
-	fmt.Println(output)
+	if output != "" {
+		fmt.Println(output)
+	}
+
+	os.Exit(status)
 }
