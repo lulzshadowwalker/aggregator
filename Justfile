@@ -6,6 +6,9 @@ MIGRATIONS_DIR := "internal/database/migrations"
 default:
     @just --list
 
+console *args:
+    go run cmd/console/main.go {{args}}
+
 migrate-up:
     goose --dir {{MIGRATIONS_DIR}} postgres "{{DB_URL}}" up
 

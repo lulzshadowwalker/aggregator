@@ -1,3 +1,6 @@
+-- name: ListUsers :many
+select * from users;
+
 -- name: GetUser :one
 select * from users
 where name = $1;

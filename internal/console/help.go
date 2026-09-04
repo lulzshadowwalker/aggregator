@@ -26,7 +26,7 @@ func (c Help) Handle(state *state, args []string) (string, int, error) {
 	str.WriteString("Available Commands:\n")
 
 	for _, command := range state.console.commands {
-		str.WriteString(fmt.Sprintf("\t%s: %s\n", command.Name(), command.Description()))
+		fmt.Fprintf(&str, "\t%s: %s\n", command.Name(), command.Description())
 	}
 
 	return str.String(), 1, nil
