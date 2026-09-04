@@ -20,6 +20,7 @@ func New() *Console {
 		Help{},
 		Register{},
 		Login{},
+		Reset{},
 	}
 
 	console := &Console{
