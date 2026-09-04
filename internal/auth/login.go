@@ -7,7 +7,7 @@ import (
 	"github.com/lulzshadowwalker/aggregator/internal/config"
 )
 
-type LoginParams struct {
+type Credentials struct {
 	Username string
 }
 
@@ -15,8 +15,8 @@ var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
-func Login(params LoginParams) error {
-	username := strings.TrimSpace(params.Username)
+func Login(credentials Credentials) error {
+	username := strings.TrimSpace(credentials.Username)
 	if username == "" {
 		return ErrInvalidCredentials
 	}
