@@ -25,6 +25,7 @@ func New() *Console {
 		RSS{},
 		Agg{},
 		AddFeed{},
+		Feeds{},
 	}
 
 	console := &Console{

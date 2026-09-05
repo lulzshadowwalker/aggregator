@@ -87,6 +87,61 @@ func (q *Queries) DeleteUsers(ctx context.Context) error {
 	return err
 }
 
+const getFeeds = `-- name: GetFeeds :many
+select
+    feeds.id,
+    feeds.name,
+    feeds.url,
+    feeds.user_id,
+    feeds.created_at,
+    feeds.updated_at,
+    users.name as user_name
+from feeds
+join users on feeds.user_id = users.id
+order by feeds.created_at asc
+`
+
+type GetFeedsRow struct {
+	ID        uuid.UUID
+	Name      string
+	Url       string
+	UserID    uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserName  string
+}
+
+func (q *Queries) GetFeeds(ctx context.Context) ([]GetFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeeds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFeedsRow
+	for rows.Next() {
+		var i GetFeedsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Url,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUser = `-- name: GetUser :one
 select id, name, created_at, updated_at from users
 where name = $1
@@ -104,12 +159,12 @@ func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
 	return i, err
 }
 
-const listUsers = `-- name: ListUsers :many
+const getUsers = `-- name: GetUsers :many
 select id, name, created_at, updated_at from users
 `
 
-func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUsers)
+func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers)
 	if err != nil {
 		return nil, err
 	}

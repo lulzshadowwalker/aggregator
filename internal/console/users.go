@@ -21,7 +21,7 @@ func (c Users) Description() string {
 }
 
 func (c Users) Handle(state *state, args []string) (string, int, error) {
-	users, err := state.database.ListUsers(context.Background())
+	users, err := state.database.GetUsers(context.Background())
 	if err != nil {
 		return "", 1, err
 	}

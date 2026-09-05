@@ -7,5 +7,5 @@ import (
 )
 
 func List(db *database.Queries) ([]database.User, error) {
-	return db.ListUsers(context.Background())
+	return db.GetUsers(context.Background())
 }
