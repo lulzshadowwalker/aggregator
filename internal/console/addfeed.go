@@ -30,7 +30,20 @@ func (c AddFeed) Handle(state *state, args []string) (string, int, error) {
 	if err != nil {
 		return "", 1, err
 	}
-	if err := rss.Subscribe(context.Background(), state.database, args[0], *u); err != nil {
+
+	ctx := context.Background()
+
+	tx, err := state.connection.BeginTx(ctx, nil)
+	if err != nil {
+		return "", 1, err
+	}
+	defer tx.Rollback()
+
+	if err := rss.Subscribe(ctx, state.database.WithTx(tx), args[0], *u); err != nil {
+		return "", 1, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return "", 1, err
 	}
 

@@ -47,5 +47,6 @@ func Subscribe(ctx context.Context, db *database.Queries, name string, url url.U
 		return err
 	}
 
+	_, err = Follow(ctx, db, url)
 	return err
 }

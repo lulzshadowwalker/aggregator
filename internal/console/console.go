@@ -1,6 +1,7 @@
 package console
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/lulzshadowwalker/aggregator/internal/config"
@@ -26,6 +27,8 @@ func New() *Console {
 		Agg{},
 		AddFeed{},
 		Feeds{},
+		Follow{},
+		Following{},
 	}
 
 	console := &Console{
@@ -43,9 +46,10 @@ func New() *Console {
 
 func (c *Console) Run(args []string) (string, int, error) {
 	state := &state{
-		config:   config.Instance,
-		console:  *c,
-		database: database.New(database.Connection),
+		config:     config.Instance,
+		console:    *c,
+		database:   database.New(database.Connection),
+		connection: database.Connection,
 	}
 
 	var command Commander = Help{}
@@ -80,7 +84,8 @@ type Commander interface {
 }
 
 type state struct {
-	config   *config.Config
-	console  Console
-	database *database.Queries
+	config     *config.Config
+	console    Console
+	database   *database.Queries
+	connection *sql.DB
 }

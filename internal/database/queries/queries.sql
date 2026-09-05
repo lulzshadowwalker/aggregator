@@ -18,16 +18,39 @@ insert into feeds (id, user_id, name, url, created_at, updated_at)
 values ($1, $2, $3, $4, $5, $6)
 returning *;
 
+-- name: CreateFeedFollow :one
+with inserted as (
+	insert into feed_follows (id, user_id, feed_id, created_at, updated_at)
+	values ($1, $2, $3, $4, $5)
+	returning *
+)
+select 
+	inserted.*,
+	users.name as user_name,
+	feeds.name as feed_name
+from 
+	inserted
+	join users on users.id = inserted.user_id
+	join feeds on feeds.id = inserted.feed_id;
+
+
 -- name: GetFeeds :many
 select
-    feeds.id,
-    feeds.name,
-    feeds.url,
-    feeds.user_id,
-    feeds.created_at,
-    feeds.updated_at,
-    users.name as user_name
+	feeds.*,
+	users.name as user_name
 from feeds
 join users on feeds.user_id = users.id
 order by feeds.created_at asc;
 
+-- name: GetFeedsByUserID :many
+select 
+	users.*,
+	feeds.name as feed_name,
+	feeds.url as feed_url
+from users
+join feeds on feeds.user_id = users.id
+where users.id = $1;
+
+
+-- name: GetFeedByURL :one
+select * from feeds where url = $1;
