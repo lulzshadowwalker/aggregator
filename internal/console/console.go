@@ -24,6 +24,7 @@ func New() *Console {
 		Reset{},
 		RSS{},
 		Agg{},
+		AddFeed{},
 	}
 
 	console := &Console{

@@ -3,6 +3,8 @@ package console
 import (
 	"context"
 	"fmt"
+
+	"github.com/lulzshadowwalker/aggregator/internal/config"
 )
 
 type Reset struct {
@@ -14,13 +16,18 @@ func (c Reset) Name() string {
 }
 
 func (c Reset) Description() string {
-	return "truncate all users"
+	return "delete all users"
 }
 
 func (c Reset) Handle(state *state, args []string) (string, int, error) {
-	if err := state.database.TruncateUsers(context.Background()); err != nil {
-		return "", 1, fmt.Errorf("failed to truncate users: %w", err)
+	if err := state.database.DeleteUsers(context.Background()); err != nil {
+		return "", 1, fmt.Errorf("failed to delete all users: %w", err)
 	}
 
-	return "users truncated successfully", 0, nil
+	config.Instance.Username = ""
+	if err := config.Instance.Write(); err != nil {
+		return "", 1, err
+	}
+
+	return "all users deleted successfully", 0, nil
 }

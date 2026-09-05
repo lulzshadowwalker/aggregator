@@ -13,6 +13,8 @@ import (
 
 var (
 	ErrUnknown = errors.New("unknown error has occurred")
+	ErrUnauthorized = errors.New("unauthorized")
+	ErrConflict = errors.New("conflict")
 )
 
 type Feed struct {
