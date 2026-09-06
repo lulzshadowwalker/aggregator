@@ -10,24 +10,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 	"github.com/lulzshadowwalker/aggregator/internal/database"
 )
 
-func Follow(ctx context.Context, db *database.Queries, url url.URL) (*database.Feed, error) {
-	user, err := db.GetUser(ctx, config.Instance.Username)
-	// this should be removed whenever we introduce some form of a middleware
-	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
-			return nil, ErrUnauthorized
-		}
-
-		return nil, err
-	}
-
+func Follow(ctx context.Context, db *database.Queries, user database.User, url url.URL) (*database.Feed, error) {
 	feed, err := db.GetFeedByURL(ctx, url.String())
 	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("feed with url %q: %w", url.String(), ErrNotFound)
 		}
 

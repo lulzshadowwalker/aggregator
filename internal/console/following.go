@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lulzshadowwalker/aggregator/internal/database"
 	"github.com/lulzshadowwalker/aggregator/internal/rss"
 )
 
@@ -21,12 +22,12 @@ func (c Following) Description() string {
 	return "list all of the feeds you follow"
 }
 
-func (c Following) Handle(state *state, args []string) (string, int, error) {
+func (c Following) Handle(state *state, args []string, user database.User) (string, int, error) {
 	if len(args) > 0 {
 		return "", 1, errors.New("usage: following")
 	}
 
-	feeds, err := rss.Following(context.Background(), state.database)
+	feeds, err := rss.Following(context.Background(), state.database, user)
 	if err != nil {
 		return "", 1, err
 	}

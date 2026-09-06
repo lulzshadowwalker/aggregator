@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 )
 
 type Users struct {
@@ -30,7 +28,7 @@ func (c Users) Handle(state *state, args []string) (string, int, error) {
 	str.WriteString("Users:\n")
 	for _, user := range users {
 		suffix := "\n"
-		if user.Name == config.Instance.Username {
+		if user.Name == state.config.Username {
 			suffix = " (current)\n"
 		}
 

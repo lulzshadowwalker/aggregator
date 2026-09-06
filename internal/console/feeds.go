@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 	"github.com/lulzshadowwalker/aggregator/internal/database"
 )
 
@@ -49,7 +48,7 @@ func (c Feeds) Handle(state *state, args []string) (string, int, error) {
 	str.WriteString("Feeds:\n")
 	for _, user := range users {
 		suffix := ":\n"
-		if user == config.Instance.Username {
+		if user == state.config.Username {
 			suffix = " (current):\n"
 		}
 		fmt.Fprintf(&str, "\t* %s%s", user, suffix)

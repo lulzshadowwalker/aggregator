@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/lulzshadowwalker/aggregator/internal/database"
 	"github.com/lulzshadowwalker/aggregator/internal/rss"
 )
 
@@ -21,7 +22,7 @@ func (c Follow) Description() string {
 	return "follow an existing feed"
 }
 
-func (c Follow)  Handle(state *state, args []string) (string, int, error) {
+func (c Follow) Handle(state *state, args []string, user database.User) (string, int, error) {
 	if len(args) != 1 {
 		return "", 1, errors.New("usage: follow <url>")
 	}
@@ -31,7 +32,7 @@ func (c Follow)  Handle(state *state, args []string) (string, int, error) {
 		return "", 1, err
 	}
 
-	feed, err := rss.Follow(context.Background(), state.database, *u)
+	feed, err := rss.Follow(context.Background(), state.database, user, *u)
 	if err != nil {
 		return "", 1, err
 	}

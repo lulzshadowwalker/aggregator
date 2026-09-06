@@ -25,10 +25,10 @@ func New() *Console {
 		Reset{},
 		RSS{},
 		Agg{},
-		AddFeed{},
+		WithAuth(AddFeed{}),
 		Feeds{},
-		Follow{},
-		Following{},
+		WithAuth(Follow{}),
+		WithAuth(Following{}),
 	}
 
 	console := &Console{
@@ -74,6 +74,10 @@ func (c *Console) Register(command Commander) error {
 
 	c.commands[command.Name()] = command
 	return nil
+}
+
+func (c *Console) RegisterAuthed(command AuthedCommander) error {
+	return c.Register(WithAuth(command))
 }
 
 // could be a struct too I guess but I would prefer an interface

@@ -2,7 +2,6 @@ package rss
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/url"
@@ -11,26 +10,16 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 	"github.com/lulzshadowwalker/aggregator/internal/database"
 )
 
-func Subscribe(ctx context.Context, db *database.Queries, name string, url url.URL) error {
+func Subscribe(ctx context.Context, db *database.Queries, user database.User, name string, url url.URL) error {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return errors.New("name cannot be empty")
 	}
 
-	user, err := db.GetUser(ctx, config.Instance.Username)
-	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
-			return ErrUnauthorized
-		}
-
-		return err
-	}
-
-	_, err = db.CreateFeed(ctx, database.CreateFeedParams{
+	_, err := db.CreateFeed(ctx, database.CreateFeedParams{
 		ID:        uuid.New(),
 		UserID:    user.ID,
 		Name:      name,
@@ -47,6 +36,6 @@ func Subscribe(ctx context.Context, db *database.Queries, name string, url url.U
 		return err
 	}
 
-	_, err = Follow(ctx, db, url)
+	_, err = Follow(ctx, db, user, url)
 	return err
 }

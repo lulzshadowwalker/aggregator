@@ -5,24 +5,13 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 	"github.com/lulzshadowwalker/aggregator/internal/database"
 )
 
-func Following(ctx context.Context, db *database.Queries) ([]database.GetFeedsByUserIDRow, error) {
-	user, err := db.GetUser(ctx, config.Instance.Username)
-	// this should be removed whenever we introduce some form of a middleware
-	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
-			return nil, ErrUnauthorized
-		}
-
-		return nil, err
-	}
-
+func Following(ctx context.Context, db *database.Queries, user database.User) ([]database.GetFeedsByUserIDRow, error) {
 	feeds, err := db.GetFeedsByUserID(ctx, user.ID)
 	if err != nil {
-		if errors.Is(sql.ErrNoRows, err) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return make([]database.GetFeedsByUserIDRow, 0), nil
 		}
 

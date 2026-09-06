@@ -3,8 +3,6 @@ package console
 import (
 	"context"
 	"fmt"
-
-	"github.com/lulzshadowwalker/aggregator/internal/config"
 )
 
 type Reset struct {
@@ -24,8 +22,8 @@ func (c Reset) Handle(state *state, args []string) (string, int, error) {
 		return "", 1, fmt.Errorf("failed to delete all users: %w", err)
 	}
 
-	config.Instance.Username = ""
-	if err := config.Instance.Write(); err != nil {
+	state.config.Username = ""
+	if err := state.config.Write(); err != nil {
 		return "", 1, err
 	}
 

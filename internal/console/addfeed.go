@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/lulzshadowwalker/aggregator/internal/database"
 	"github.com/lulzshadowwalker/aggregator/internal/rss"
 )
 
@@ -21,7 +22,7 @@ func (c AddFeed) Description() string {
 	return "subscribe to a certain feed"
 }
 
-func (c AddFeed) Handle(state *state, args []string) (string, int, error) {
+func (c AddFeed) Handle(state *state, args []string, user database.User) (string, int, error) {
 	if len(args) != 2 {
 		return "", 1, errors.New("usage: addfeed <name> <url>")
 	}
@@ -39,7 +40,7 @@ func (c AddFeed) Handle(state *state, args []string) (string, int, error) {
 	}
 	defer tx.Rollback()
 
-	if err := rss.Subscribe(ctx, state.database.WithTx(tx), args[0], *u); err != nil {
+	if err := rss.Subscribe(ctx, state.database.WithTx(tx), user, args[0], *u); err != nil {
 		return "", 1, err
 	}
 
