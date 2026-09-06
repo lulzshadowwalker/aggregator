@@ -33,6 +33,10 @@ from
 	join users on users.id = inserted.user_id
 	join feeds on feeds.id = inserted.feed_id;
 
+-- name: DeleteFeedFollow :exec
+delete from feed_follows
+where user_id = $1
+and feed_id = $1;
 
 -- name: GetFeeds :many
 select

@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	ErrConflict = errors.New("command with the same name already exists")
+	ErrConflict  = errors.New("command with the same name already exists")
+	ErrForbidden = errors.New("forbidden")
 )
 
 type Console struct {
@@ -29,6 +30,7 @@ func New() *Console {
 		Feeds{},
 		WithAuth(Follow{}),
 		WithAuth(Following{}),
+		WithAuth(Unfollow{}),
 	}
 
 	console := &Console{
