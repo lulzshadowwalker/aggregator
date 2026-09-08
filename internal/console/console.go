@@ -31,6 +31,7 @@ func New() *Console {
 		WithAuth(Follow{}),
 		WithAuth(Following{}),
 		WithAuth(Unfollow{}),
+		WithAuth(Browse{}),
 	}
 
 	console := &Console{

@@ -43,14 +43,12 @@ func (c Agg) Handle(state *state, args []string) (string, int, error) {
 }
 
 func scrape(state *state) {
-	feed, dbFeed, err := rss.Scrape(context.Background(), state.database)
+	feed, count, err := rss.Scrape(context.Background(), state.database)
 	if err != nil {
 		fmt.Printf("Couldn't scrape feed: %v\n", err)
 		return
 	}
 
-	fmt.Printf("* %s (%s)\n", dbFeed.Name, dbFeed.Url)
-	for _, item := range feed.Channel.Items {
-		fmt.Printf("  - %s\n", item.Title)
-	}
+	fmt.Printf("Feed %s collected, %d posts found\n", feed.Name, count)
 }
+

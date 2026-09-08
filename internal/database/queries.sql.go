@@ -105,6 +105,48 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 	return i, err
 }
 
+const createPost = `-- name: CreatePost :one
+insert into posts (id, feed_id, url, title, description, published_at, created_at, updated_at)
+values ($1, $2, $3, $4, $5, $6, $7, $8)
+returning id, feed_id, url, title, description, published_at, created_at, updated_at
+`
+
+type CreatePostParams struct {
+	ID          uuid.UUID
+	FeedID      uuid.UUID
+	Url         string
+	Title       string
+	Description sql.NullString
+	PublishedAt sql.NullString
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, createPost,
+		arg.ID,
+		arg.FeedID,
+		arg.Url,
+		arg.Title,
+		arg.Description,
+		arg.PublishedAt,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.FeedID,
+		&i.Url,
+		&i.Title,
+		&i.Description,
+		&i.PublishedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 insert into users (id, name, created_at, updated_at)
 values ($1, $2, $3, $4)
@@ -295,6 +337,52 @@ func (q *Queries) GetNextFeedToFetch(ctx context.Context) (Feed, error) {
 		&i.LastFetchedAt,
 	)
 	return i, err
+}
+
+const getPostsForUser = `-- name: GetPostsForUser :many
+select posts.id, posts.feed_id, posts.url, posts.title, posts.description, posts.published_at, posts.created_at, posts.updated_at 
+from posts
+join feed_follows on feed_follows.feed_id = posts.feed_id
+where feed_follows.user_id = $1
+order by posts.published_at desc nulls last, posts.created_at desc
+limit $2
+`
+
+type GetPostsForUserParams struct {
+	UserID uuid.UUID
+	Limit  int32
+}
+
+func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams) ([]Post, error) {
+	rows, err := q.db.QueryContext(ctx, getPostsForUser, arg.UserID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Post
+	for rows.Next() {
+		var i Post
+		if err := rows.Scan(
+			&i.ID,
+			&i.FeedID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one
