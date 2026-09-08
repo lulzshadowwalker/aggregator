@@ -37,15 +37,3 @@ func (c RSS) Handle(state *state, args []string) (string, int, error) {
 
 	return fmt.Sprintf("%#v", feed), 0, nil
 }
-
-type Agg struct {
-	RSS
-}
-
-func (c Agg) Name() string {
-	return "agg"
-}
-
-func (c Agg) Handle(state *state, args []string) (string, int, error) {
-	return RSS{}.Handle(state, []string{"https://www.wagslane.dev/index.xml"})
-}
